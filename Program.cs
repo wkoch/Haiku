@@ -8,9 +8,9 @@ namespace Haiku
         {
             Cli cli = new Cli();
 
-            cli.SetCommand("New", "Create a new project.", New);
-            cli.SetCommand("Build", "Builds the project.", Build);
-            cli.DefaultCommand("Help", "Prints the Help text.", Help);
+            cli.SetCommand(new Command("New", "Create a new project.", New));
+            cli.SetCommand(new Command("Build", "Builds the project.", Build));
+            cli.DefaultCommand(new Command("Help", "Prints the Help text.", Help));
 
             cli.Parse(args);
         }

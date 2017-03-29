@@ -13,13 +13,16 @@ namespace Haiku
         public void Parse(string[] args)
         {
             Argument = (args.Length > 0) ? args[0] : null;
-            Option = (args.Length > 1) ? args[1] : null;
 
             if (Argument != null)
             {
                 foreach (Command command in Commands)
                     if (command.Name.ToLower() == Argument.ToLower())
+                    {
+                        command.Option = (args.Length > 1) ? args[1] : null;
                         command.Execute();
+                    }
+
             }
             else
             {
@@ -27,14 +30,14 @@ namespace Haiku
             }
         }
 
-        public void DefaultCommand(string name, string description, Action method)
+        public Command DefaultCommand(Command command)
         {
-            Default = SetCommand(name, description, method);
+            Default = SetCommand(command);
+            return command;
         }
 
-        public Command SetCommand(string name, string description, Action method)
+        public Command SetCommand(Command command)
         {
-            Command command = new Command(name, description, method);
             Commands.Add(command);
             return command;
         }

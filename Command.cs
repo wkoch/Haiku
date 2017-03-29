@@ -7,6 +7,7 @@ namespace Haiku
         public string Name { get; set; }
         public string Description { get; set; }
         public Action Method { get; set; }
+        public string Option { get; set; }
 
         public Command(string name, string description, Action method)
         {
