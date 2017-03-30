@@ -4,22 +4,58 @@ namespace Haiku
 {
     public class Haiku
     {
-        public static void New()
-        {
-            Console.WriteLine("Creating a new project.");
-            string BaseDir = "HaikuWebsite";
-            string[] Folders = { "pages", "posts", "public", "template" };
+        public string BaseDir { get; set; }
+        public string[] Folders = { "pages", "posts", "public", "template" };
+        public string ConfigFile = "config.toml";
 
-            foreach (string folder in Folders)
+        public Haiku(string baseDir = "HaikuWebsite")
+        {
+            BaseDir = baseDir;
+        }
+
+        private bool IsHaikuProject()
+        {
+            if (System.IO.Directory.Exists(BaseDir) && System.IO.File.Exists(System.IO.Path.Combine(BaseDir, ConfigFile)))
+                return true;
+            else
+                return false;
+        }
+
+        public void New()
+        {
+            if (IsHaikuProject())
             {
-                Console.WriteLine(System.IO.Path.Combine(BaseDir, folder));
-                // System.IO.Directory.CreateDirectory(System.IO.Path.Combine(BaseDir, folder));
+                Console.WriteLine("Error! Project already exists.");
+            }
+            else
+            {
+                Console.WriteLine($"Creating a new project on {BaseDir}.\n");
+
+                foreach (string folder in Folders)
+                {
+                    CreateFolder(BaseDir, folder);
+                }
+                CreateFile(BaseDir, ConfigFile);
+
+                Console.WriteLine($"\nProject {BaseDir} created successfuly.");
             }
         }
 
-        public static void Build()
+        public void Build()
         {
             Console.WriteLine("Building this project.");
+        }
+
+        private void CreateFolder(string directory, string foldername)
+        {
+            Console.WriteLine($"Creating folder: {System.IO.Path.Combine(directory, foldername)}");
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(directory, foldername));
+        }
+
+        private void CreateFile(string directory, string filename)
+        {
+            Console.WriteLine($"Creating file: {System.IO.Path.Combine(directory, filename)}");
+            System.IO.File.Create(System.IO.Path.Combine(directory, filename));
         }
     }
 }
