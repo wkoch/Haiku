@@ -13,9 +13,9 @@ namespace Haiku
         {
             try
             {
-                Argument = (args.Length > 0) ? args[0] : null;
+                Argument = (args.Length > 0) ? args[0].ToLower() : null;
                 foreach (var command in Commands)
-                    if (command.Name.ToLower() == Argument.ToLower())
+                    if (string.Equals(command.Name.ToLower(), Argument))
                         command.Execute();
             }
             catch (System.Exception)
