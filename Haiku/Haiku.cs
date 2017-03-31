@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace Haiku
 {
@@ -15,7 +16,7 @@ namespace Haiku
 
         private bool IsHaikuProject()
         {
-            if (System.IO.Directory.Exists(BaseDir) && System.IO.File.Exists(System.IO.Path.Combine(BaseDir, ConfigFile)))
+            if (Directory.Exists(BaseDir) && File.Exists(Path.Combine(BaseDir, ConfigFile)))
                 return true;
             else
                 return false;
@@ -48,14 +49,14 @@ namespace Haiku
 
         private void CreateFolder(string directory, string foldername)
         {
-            Console.WriteLine($"Creating folder: {System.IO.Path.Combine(directory, foldername)}");
-            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(directory, foldername));
+            Console.WriteLine($"Creating folder: {Path.Combine(directory, foldername)}");
+            Directory.CreateDirectory(Path.Combine(directory, foldername));
         }
 
         private void CreateFile(string directory, string filename)
         {
-            Console.WriteLine($"Creating file: {System.IO.Path.Combine(directory, filename)}");
-            System.IO.File.Create(System.IO.Path.Combine(directory, filename));
+            Console.WriteLine($"Creating file: {Path.Combine(directory, filename)}");
+            File.Create(Path.Combine(directory, filename));
         }
     }
 }
