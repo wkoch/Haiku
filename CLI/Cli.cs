@@ -14,7 +14,7 @@ namespace Haiku
             try
             {
                 Argument = (args.Length > 0) ? args[0] : null;
-                foreach (Command command in Commands)
+                foreach (var command in Commands)
                     if (command.Name.ToLower() == Argument.ToLower())
                         command.Execute();
             }

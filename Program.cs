@@ -6,8 +6,9 @@ namespace Haiku
     {
         static void Main(string[] args)
         {
-            Cli cli = new Cli();
-            Haiku project = new Haiku();
+            var cli = new Cli();
+            var project = new Haiku();
+
             if (args.Length > 1)
                 project.BaseDir = args[1];
 
