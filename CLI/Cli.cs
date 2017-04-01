@@ -13,7 +13,7 @@ namespace Haiku
         {
             try
             {
-                Argument = (args.Length > 0) ? args[0].ToLower() : null;
+                Argument = args[0].ToLower();
                 foreach (var command in Commands)
                     if (string.Equals(command.Name.ToLower(), Argument))
                         command.Execute();
@@ -24,14 +24,15 @@ namespace Haiku
             }
         }
 
-        public Command DefaultCommand(Command command)
+        public Command DefaultCommand(string name, string description, Action method)
         {
-            Default = SetCommand(command);
-            return command;
+            Default = SetCommand(name, description, method);
+            return Default;
         }
 
-        public Command SetCommand(Command command)
+        public Command SetCommand(string name, string description, Action method)
         {
+            Command command = new Command(name, description, method);
             Commands.Add(command);
             return command;
         }
