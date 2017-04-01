@@ -34,9 +34,9 @@ namespace Haiku
 
                 foreach (string folder in Folders)
                 {
-                    CreateFolder(BaseDir, folder);
+                    Helper.CreateFolder(BaseDir, folder);
                 }
-                CreateFile(BaseDir, ConfigFile);
+                Helper.CreateFile(BaseDir, ConfigFile);
 
                 Console.WriteLine($"\nProject {BaseDir} created successfuly.");
             }
@@ -45,18 +45,6 @@ namespace Haiku
         public void Build()
         {
             Console.WriteLine("Building this project.");
-        }
-
-        private void CreateFolder(string directory, string foldername)
-        {
-            Console.WriteLine($"Creating folder: {Path.Combine(directory, foldername)}");
-            Directory.CreateDirectory(Path.Combine(directory, foldername));
-        }
-
-        private void CreateFile(string directory, string filename)
-        {
-            Console.WriteLine($"Creating file: {Path.Combine(directory, filename)}");
-            File.Create(Path.Combine(directory, filename));
         }
     }
 }
