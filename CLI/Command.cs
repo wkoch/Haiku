@@ -14,9 +14,6 @@ namespace Haiku
             Description = description;
             Method = method;
         }
-        public void Execute()
-        {
-            Method();
-        }
+        public void Execute() => Method();
     }
 }

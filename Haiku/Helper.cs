@@ -7,14 +7,16 @@ namespace Haiku
     {
         public static void CreateFolder(string directory, string foldername)
         {
-            Console.WriteLine($"Creating folder: {Path.Combine(directory, foldername)}");
-            Directory.CreateDirectory(Path.Combine(directory, foldername));
+            var FolderPath = Path.Combine(directory, foldername);
+            Console.WriteLine($"Creating folder: {FolderPath}");
+            Directory.CreateDirectory(FolderPath);
         }
 
         public static void CreateFile(string directory, string filename)
         {
-            Console.WriteLine($"Creating file: {Path.Combine(directory, filename)}");
-            File.Create(Path.Combine(directory, filename));
+            var FilePath = Path.Combine(directory, filename);
+            Console.WriteLine($"Creating file: {FilePath}");
+            File.Create(FilePath);
         }
     }
 }

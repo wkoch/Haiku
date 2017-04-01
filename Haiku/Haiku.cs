@@ -9,18 +9,9 @@ namespace Haiku
         public string[] Folders = { "pages", "posts", "public", "template" };
         public string ConfigFile = "config.toml";
 
-        public Haiku(string baseDir = "HaikuWebsite")
-        {
-            BaseDir = baseDir;
-        }
+        public Haiku(string baseDir = "HaikuWebsite") => BaseDir = baseDir;
 
-        private bool IsHaikuProject()
-        {
-            if (Directory.Exists(BaseDir) && File.Exists(Path.Combine(BaseDir, ConfigFile)))
-                return true;
-            else
-                return false;
-        }
+        private bool IsHaikuProject() => (Directory.Exists(BaseDir) && File.Exists(Path.Combine(BaseDir, ConfigFile)));
 
         public void New()
         {
