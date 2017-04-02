@@ -6,8 +6,8 @@ namespace Haiku
     public class Haiku
     {
         public string BaseDir { get; set; }
-        public string[] Folders = { "pages", "posts", "public", "template" };
-        public string ConfigFile = "config.toml";
+        private string[] Folders = { "pages", "posts", "public", "template" };
+        private string ConfigFile = "config.toml";
 
         public Haiku(string baseDir = "HaikuWebsite") => BaseDir = baseDir;
 
