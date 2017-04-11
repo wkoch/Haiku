@@ -5,37 +5,40 @@ namespace Haiku
 {
     public class Haiku
     {
-        public string BaseDir { get; set; }
         private string[] Folders = { "pages", "posts", "public", "template" };
         private string ConfigFile = "config.toml";
 
-        public Haiku(string baseDir = "HaikuWebsite") => BaseDir = baseDir;
+        private bool IsHaikuProject(string path) => (Directory.Exists(path) && File.Exists(Path.Combine(path, ConfigFile)));
 
-        private bool IsHaikuProject() => (Directory.Exists(BaseDir) && File.Exists(Path.Combine(BaseDir, ConfigFile)));
-
-        public void New()
+        public void New(string path)
         {
-            if (IsHaikuProject())
+            if (IsHaikuProject(path))
             {
-                Console.WriteLine("Error! Project already exists.");
+                Console.WriteLine("Aborting: Project already exists.");
             }
             else
             {
-                Console.WriteLine($"Creating a new project on {BaseDir}.\n");
+                Console.WriteLine($"Creating a new project on {path}.\n");
 
-                foreach (string folder in Folders)
+                foreach (var folder in Folders)
                 {
-                    Helper.CreateFolder(BaseDir, folder);
+                    Helper.CreateFolder(path, folder);
+                    if (folder == "posts")
+                    {
+                        Helper.CreateFile(Path.Combine(path, folder), "test.md");
+                        // File.WriteAllText();
+                    }
                 }
-                Helper.CreateFile(BaseDir, ConfigFile);
-
-                Console.WriteLine($"\nProject {BaseDir} created successfuly.");
+                Helper.CreateFile(path, ConfigFile);
+                Helper.greenText();
+                Console.WriteLine($"\nProject \"{path}\" created successfuly.");
+                Helper.grayText();
             }
         }
 
-        public void Build()
+        public void Build(string path)
         {
-            Console.WriteLine("Building this project.");
+            Console.WriteLine($"Building project on \"{path}\".");
         }
     }
 }
