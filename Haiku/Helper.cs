@@ -7,23 +7,25 @@ namespace Haiku
     {
         public static void CreateFolder(string directory, string foldername)
         {
+            var defaultColor = Console.ForegroundColor;
             var FolderPath = Path.Combine(directory, foldername);
             blueText();
             Console.Write("Creating: ");
             cyanText();
             System.Console.WriteLine(FolderPath);
-            grayText();
+            setColor(defaultColor);
             Directory.CreateDirectory(FolderPath);
         }
 
         public static void CreateFile(string directory, string filename)
         {
+            var defaultColor = Console.ForegroundColor;
             var FilePath = Path.Combine(directory, filename);
             blueText();
             Console.Write("Creating: ");
             cyanText();
             Console.WriteLine(FilePath);
-            grayText();
+            setColor(defaultColor);
             File.Create(FilePath);
         }
 
@@ -31,5 +33,6 @@ namespace Haiku
         public static void cyanText() => Console.ForegroundColor = ConsoleColor.Cyan;
         public static void greenText() => Console.ForegroundColor = ConsoleColor.Green;
         public static void grayText() => Console.ForegroundColor = ConsoleColor.Gray;
+        public static void setColor(ConsoleColor color) => Console.ForegroundColor = color;
     }
 }

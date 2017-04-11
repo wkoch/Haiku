@@ -12,13 +12,14 @@ namespace Haiku
 
         public void New(string path)
         {
+            var defaultColor = Console.ForegroundColor;
             if (IsHaikuProject(path))
             {
                 Console.WriteLine("Aborting: Project already exists.");
             }
             else
             {
-                Console.WriteLine($"Creating a new project on {path}.\n");
+                Console.WriteLine($"Creating a new project on \"{path}\".\n");
 
                 foreach (var folder in Folders)
                 {
@@ -26,13 +27,12 @@ namespace Haiku
                     if (folder == "posts")
                     {
                         Helper.CreateFile(Path.Combine(path, folder), "test.md");
-                        // File.WriteAllText();
                     }
                 }
                 Helper.CreateFile(path, ConfigFile);
                 Helper.greenText();
                 Console.WriteLine($"\nProject \"{path}\" created successfuly.");
-                Helper.grayText();
+                Helper.setColor(defaultColor);
             }
         }
 
