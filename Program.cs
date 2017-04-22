@@ -33,9 +33,7 @@ namespace Haiku
 
                     command.OnExecute(() =>
                         {
-                            var path = pathArgument.Value != null
-                              ? pathArgument.Value
-                              : "HaikuWebsite";
+                            var path = pathArgument.Value ?? "HaikuWebsite";
 
                             haiku.New(path);
 
@@ -54,9 +52,7 @@ namespace Haiku
 
                     command.OnExecute(() =>
                         {
-                            var path = pathArgument.Value != null
-                              ? pathArgument.Value
-                              : Directory.GetCurrentDirectory();
+                            var path = pathArgument.Value ?? Directory.GetCurrentDirectory();
 
                             haiku.Build(path);
 
