@@ -14,7 +14,7 @@ namespace Haiku
             app.Name = "haiku";
             app.HelpOption("-?|-h|--help");
 
-            var haiku = new Haiku();
+            var haiku = new WebSite();
 
             // Entry Point
             app.OnExecute(() =>

@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Resources;
+using System.Reflection;
 
 namespace Haiku
 {
@@ -27,6 +29,24 @@ namespace Haiku
             Console.WriteLine(FilePath);
             setColor(defaultColor);
             File.Create(FilePath);
+        }
+
+        public static void WriteSampleResource(string directory, string filename)
+        {
+            var defaultColor = Console.ForegroundColor;
+            var filePath = Path.Combine(directory, filename);
+            var assembly = typeof(Haiku.Program).GetTypeInfo().Assembly;
+            var resourceName = "Haiku.Resources.Examples.Lorem.md";
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                blueText();
+                Console.Write("Creating: ");
+                cyanText();
+                Console.WriteLine(filePath);
+                setColor(defaultColor);
+                File.WriteAllText(filePath, reader.ReadToEnd());
+            }
         }
 
         public static void blueText() => Console.ForegroundColor = ConsoleColor.Blue;

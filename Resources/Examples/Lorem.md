@@ -1,4 +1,4 @@
-Example Post
+Lorem Ipsum
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur auctor volutpat elit id lacinia. Cras tincidunt lorem vel sapien pulvinar malesuada. Maecenas sed nulla id dui ornare elementum sed eget dui. Donec vitae rhoncus massa. Duis tempor, dolor nec maximus porttitor, nisi purus semper nulla, id bibendum quam justo mollis leo. Morbi suscipit lobortis ipsum ac placerat. Sed mi ante, blandit at nunc ut, consectetur fermentum leo.
 

@@ -1,9 +1,10 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Haiku
 {
-    public class Haiku
+    public class WebSite
     {
         private string[] Folders = { "pages", "posts", "public", "template" };
         private string ConfigFile = "config.toml";
@@ -24,9 +25,15 @@ namespace Haiku
                 foreach (var folder in Folders)
                 {
                     Helper.CreateFolder(path, folder);
-                    if (folder == "posts")
+                    if (folder == "posts" || folder == "pages")
                     {
-                        Helper.CreateFile(Path.Combine(path, folder), "test.md");
+                        DateTime today = DateTime.Today;
+                        var filename = folder == "posts" ? $"{today.Year}-{today.Month}-{today.Day}-hello-world.md" : "about.md";
+                        var directory = Path.Combine(path, folder);
+                        if (!File.Exists(directory))
+                        {
+                            Helper.WriteSampleResource(directory, filename);
+                        }
                     }
                 }
                 Helper.CreateFile(path, ConfigFile);
