@@ -28,7 +28,11 @@ namespace Haiku
                     if (folder == "posts" || folder == "pages")
                     {
                         DateTime today = DateTime.Today;
-                        var filename = folder == "posts" ? $"{today.Year}-{today.Month}-{today.Day}-hello-world.md" : "about.md";
+                        string year = today.Year.ToString();
+                        string month = today.Month.ToString().PadLeft(2, '0');
+                        string day = today.Day.ToString().PadLeft(2, '0');
+                        string date = $"{year}-{month}-{day}";
+                        var filename = folder == "posts" ? $"{date}-hello-world.md" : "about.md";
                         var directory = Path.Combine(path, folder);
                         if (!File.Exists(directory))
                         {
