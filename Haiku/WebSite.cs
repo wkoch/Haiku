@@ -20,7 +20,7 @@ namespace Haiku
             }
             else
             {
-                Console.WriteLine($"Creating a new project on \"{path}\".\n");
+                Console.WriteLine($"Creating a new project: {path}.\n");
 
                 foreach (var folder in Folders)
                 {
@@ -49,7 +49,7 @@ namespace Haiku
 
         public void Build(string path)
         {
-            Console.WriteLine($"Building project on \"{path}\".");
+            Console.WriteLine($"Building project: {path}.");
         }
     }
 }
