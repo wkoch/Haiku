@@ -16,7 +16,7 @@ namespace Haiku
             var defaultColor = Console.ForegroundColor;
             if (IsHaikuProject(path))
             {
-                Console.WriteLine("Aborting: Project already exists.");
+                Console.WriteLine("Aborted: Project already exists.");
             }
             else
             {
