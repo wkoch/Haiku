@@ -25,14 +25,14 @@ namespace Haiku
                 foreach (var folder in Folders)
                 {
                     Helper.CreateFolder(path, folder);
-                    if (folder == "posts" || folder == "pages")
+                    if (folder is "posts" || folder is "pages")
                     {
                         DateTime today = DateTime.Today;
                         string year = today.Year.ToString();
                         string month = today.Month.ToString().PadLeft(2, '0');
                         string day = today.Day.ToString().PadLeft(2, '0');
                         string date = $"{year}-{month}-{day}";
-                        var filename = folder == "posts" ? $"{date}-hello-world.md" : "about.md";
+                        var filename = folder is "posts" ? $"{date}-hello-world.md" : "about.md";
                         var directory = Path.Combine(path, folder);
                         if (!File.Exists(directory))
                         {

@@ -14,7 +14,7 @@ namespace Haiku
             blueText();
             Console.Write("Creating: ");
             cyanText();
-            System.Console.WriteLine(FolderPath);
+            Console.WriteLine(FolderPath);
             setColor(defaultColor);
             Directory.CreateDirectory(FolderPath);
         }
