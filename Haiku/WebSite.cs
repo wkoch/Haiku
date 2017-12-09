@@ -8,6 +8,10 @@ namespace Haiku
     {
         private string[] Folders = { "pages", "posts", "public", "template" };
         private string ConfigFile = "config.toml";
+        private string[] TemplateFiles = {
+            "header.cshtml",
+            "index.cshtml",
+            "menu.cshtml"};
         public static Status status = Status.Nothing;
 
 
@@ -37,8 +41,13 @@ namespace Haiku
                     var directory = Path.Combine(path, folder);
                     var filePath = Path.Combine(directory, filename);
                     if (!File.Exists(directory))
-                        Helper.WriteSampleResource(filePath);
+                        Helper.WriteSampleResource(filePath, "Haiku.Resources.Examples", "Lorem.md");
                 }
+            }
+            foreach (var file in TemplateFiles)
+            {
+                var filepath = Path.Combine(path, Folders[Folders.Length-1], file);
+                Helper.WriteSampleResource(filepath, "Haiku.Resources.Template", file);
             }
             Helper.CreateFile(path, ConfigFile);
             ReportProjectCreation(path);
