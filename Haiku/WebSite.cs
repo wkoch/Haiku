@@ -8,7 +8,6 @@ namespace Haiku
     {
         private string[] Folders = { "pages", "posts", "public", "template" };
         private string ConfigFile = "config.toml";
-        private static ConsoleColor DefaultColor = Console.ForegroundColor;
         public static Status status = Status.Nothing;
 
 
@@ -33,11 +32,7 @@ namespace Haiku
                 Helper.CreateFolder(path, folder);
                 if (folder is "posts" || folder is "pages")
                 {
-                    DateTime today = DateTime.Today;
-                    string year = today.Year.ToString();
-                    string month = today.Month.ToString().PadLeft(2, '0');
-                    string day = today.Day.ToString().PadLeft(2, '0');
-                    string date = $"{year}-{month}-{day}";
+                    var date = DateTime.Today.ToString("yyyy-MM-dd");
                     var filename = folder is "posts" ? $"{date}-hello_world.md" : "about.md";
                     var directory = Path.Combine(path, folder);
                     var filePath = Path.Combine(directory, filename);
@@ -47,7 +42,7 @@ namespace Haiku
             }
             Helper.CreateFile(path, ConfigFile);
             ReportProjectCreation(path);
-            Helper.setColor(DefaultColor);
+            Helper.DefaultColor();
         }
 
 
@@ -55,22 +50,24 @@ namespace Haiku
         {
             if (status is Status.Success)
             {
-                Helper.greenText();
+                Helper.GreenText();
                 Console.WriteLine($"\nProject \"{path}\" created successfuly.");
+                Helper.DefaultColor();
             }
             else
             {
-                Helper.redText();
+                Helper.RedText();
                 Console.WriteLine($"\nAn error ocurred while creating project {path}.");
+                Helper.DefaultColor();
             }
         }
 
 
         private void ProjectExists()
         {
-            Helper.redText();
+            Helper.RedText();
             Console.WriteLine("Aborted: Project already exists.");
-            Helper.setColor(DefaultColor);
+            Helper.DefaultColor();
         }
 
 

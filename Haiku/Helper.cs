@@ -15,7 +15,7 @@ namespace Haiku
 
     public static class Helper
     {
-        private static ConsoleColor DefaultColor = Console.ForegroundColor;
+        private static ConsoleColor DefaultConsoleColor = Console.ForegroundColor;
 
 
         public static void CreateFolder(string directory, string foldername)
@@ -52,7 +52,7 @@ namespace Haiku
             {
                 StatusMessage();
             }
-            setColor(DefaultColor);
+            DefaultColor();
         }
 
 
@@ -71,9 +71,9 @@ namespace Haiku
 
         private static void CreationMessage(string path)
         {
-            blueText();
+            BlueText();
             Console.Write("Creating ");
-            cyanText();
+            CyanText();
             Console.Write($"{path}: ");
         }
 
@@ -83,31 +83,32 @@ namespace Haiku
             var filename = Path.GetFileName(path);
             var assembly = typeof(Haiku.Program).GetTypeInfo().Assembly;
             var resourceName = "Haiku.Resources.Examples.Lorem.md";
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
+            Stream stream = assembly.GetManifestResourceStream(resourceName);
+            StreamReader reader = new StreamReader(stream);
             CreateThis("Resource", path, reader);
         }
 
 
         private static void ErrorMessage()
         {
-            redText();
+            RedText();
             Console.WriteLine("Error!");
         }
 
 
         private static void SuccessMessage()
         {
-            greenText();
+            GreenText();
             Console.WriteLine("OK");
         }
 
-        public static void setColor(ConsoleColor color) => Console.ForegroundColor = color;
-        public static void blueText() => setColor(ConsoleColor.Blue);
-        public static void cyanText() => setColor(ConsoleColor.Cyan);
-        public static void greenText() => setColor(ConsoleColor.Green);
-        public static void redText() => setColor(ConsoleColor.Red);
-        public static void grayText() => setColor(ConsoleColor.Gray);
+        public static void SetColor(ConsoleColor color) => Console.ForegroundColor = color;
+        public static void DefaultColor() => SetColor(DefaultConsoleColor);
+        public static void BlueText() => SetColor(ConsoleColor.Blue);
+        public static void CyanText() => SetColor(ConsoleColor.Cyan);
+        public static void GreenText() => SetColor(ConsoleColor.Green);
+        public static void RedText() => SetColor(ConsoleColor.Red);
+        public static void GrayText() => SetColor(ConsoleColor.Gray);
 
     }
 }
