@@ -82,7 +82,6 @@ namespace Haiku
         {
             var filename = Path.GetFileName(path);
             var assembly = typeof(Haiku.Program).GetTypeInfo().Assembly;
-            // var resourceName = "Haiku.Resources.Examples.Lorem.md";
             var resourceName = $"{resource}.{file}";
             Stream stream = assembly.GetManifestResourceStream(resourceName);
             StreamReader reader = new StreamReader(stream);
