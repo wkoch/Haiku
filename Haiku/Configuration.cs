@@ -1,4 +1,4 @@
-namespace Haiku.Config
+namespace Haiku
 {
     public class Configuration
     {
