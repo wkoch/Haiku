@@ -34,15 +34,24 @@ namespace Haiku
             foreach (var folder in Folders)
             {
                 Helper.CreateFolder(path, folder);
-                if (folder is "posts" || folder is "pages")
+                var filename = "";
+                var file = "";
+
+                if (folder is "posts")
                 {
                     var date = DateTime.Today.ToString("yyyy-MM-dd");
-                    var filename = folder is "posts" ? $"{date}-hello_world.md" : "about.md";
-                    var directory = Path.Combine(path, folder);
-                    var filePath = Path.Combine(directory, filename);
-                    if (!File.Exists(directory))
-                        Helper.WriteSampleResource(filePath, "Haiku.Resources.Examples", "Lorem.md");
+                    file = "hello_world.md";
+                    filename = $"{date}-{file}";
                 }
+                else
+                {
+                    file = "about.md";
+                    filename = $"{file}";
+                }
+                var directory = Path.Combine(path, folder);
+                var filePath = Path.Combine(directory, filename);
+                if (!File.Exists(directory))
+                    Helper.WriteSampleResource(filePath, "Haiku.Resources.Examples", file);
             }
             foreach (var file in TemplateFiles)
             {
@@ -51,7 +60,6 @@ namespace Haiku
             }
             Helper.CreateFile(path, ConfigFile);
             ReportProjectCreation(path);
-            Helper.DefaultColor();
         }
 
 
