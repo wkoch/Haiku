@@ -11,13 +11,14 @@ namespace Haiku
     {
         static void Main(string[] args)
         {
+            // false means it returns the Help command when called with invalid input.
             var app = new CommandLineApplication(false);
             app.Name = "haiku";
             app.HelpOption("-?|-h|--help");
             var haiku = new WebSite();
 
 
-            // Entry Point
+            // Command line Help
             app.OnExecute(() =>
                 {
                     app.ShowHelp();
@@ -57,6 +58,7 @@ namespace Haiku
                 });
 
 
+            // Entry Point
             app.Execute(args);
         }
     }

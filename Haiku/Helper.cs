@@ -7,9 +7,7 @@ namespace Haiku
 {
     public enum Status
     {
-        Nothing,
-        Error,
-        Success
+        Nothing, Error, Success
     };
 
 
