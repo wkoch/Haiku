@@ -107,6 +107,5 @@ namespace Haiku
         public static void GreenText() => SetColor(ConsoleColor.Green);
         public static void RedText() => SetColor(ConsoleColor.Red);
         public static void GrayText() => SetColor(ConsoleColor.Gray);
-
     }
 }
