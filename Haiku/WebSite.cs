@@ -9,9 +9,12 @@ namespace Haiku
         private string[] Folders = { "pages", "posts", "public", "template" };
         private string ConfigFile = "config.toml";
         private string[] TemplateFiles = {
-            "header.cshtml",
-            "index.cshtml",
-            "menu.cshtml"};
+            "_blog_index.cshtml",
+            "_footer.cshtml",
+            "_header.cshtml",
+            "_menu.cshtml",
+            "_page.cshtml",
+            "layout.cshtml"};
         public static Status status = Status.Nothing;
 
 
@@ -21,7 +24,7 @@ namespace Haiku
         public void New(string path)
         {
             if (IsHaikuProject(path))
-                ProjectExists();
+                AbortMessage("Project already exists.");
             else
                 CreateProject(path);
         }
@@ -80,17 +83,38 @@ namespace Haiku
         }
 
 
-        private void ProjectExists()
+        private void AbortMessage(string msg)
         {
             Helper.RedText();
-            Console.WriteLine("Aborted: Project already exists.");
+            Console.WriteLine($"Aborted: {msg}");
             Helper.DefaultColor();
         }
 
 
         public void Build(string path)
         {
-            Console.WriteLine($"Building project: {path}.");
+            if (IsHaikuProject(path))
+            {
+                Console.WriteLine($"Building project: {path}.");
+                ProcessPosts("HaikuWebsite/posts", "HaikuWebsite/public");
+            }
+            else
+                AbortMessage("Haiku project not found.");
+        }
+
+
+        private IEnumerable<string> ListContent(string folder) => Directory.EnumerateFiles(folder, "*.md");
+
+        private void ProcessPosts(string source, string destination)
+        {
+            foreach (var file in ListContent(source))
+            {
+                var content = File.ReadAllText(file);
+                var html = "<p>@post</p>".Replace("@post", content);
+                var filename = Path.GetFileName(file);
+                var newFile = Path.ChangeExtension(Path.Combine(destination, filename), "html");
+                File.WriteAllText(newFile, html);
+            }
         }
     }
 }
