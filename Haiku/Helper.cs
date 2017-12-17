@@ -76,14 +76,14 @@ namespace Haiku
         }
 
 
-        public static void WriteSampleResource(string path, string resource, string file)
+        public static void CreateResource(string path, string resource, string file)
         {
-            var filename = Path.GetFileName(path);
+            var filepath = Path.Combine(path, file);
             var assembly = typeof(Haiku.Program).GetTypeInfo().Assembly;
             var resourceName = $"{resource}.{file}";
             Stream stream = assembly.GetManifestResourceStream(resourceName);
             StreamReader reader = new StreamReader(stream);
-            CreateThis("Resource", path, reader);
+            CreateThis("Resource", filepath, reader);
         }
 
 

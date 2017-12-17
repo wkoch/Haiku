@@ -9,12 +9,12 @@ namespace Haiku
         private string[] Folders = { "pages", "posts", "public", "template" };
         private string ConfigFile = "config.toml";
         private string[] TemplateFiles = {
-            "_blog_index.cshtml",
-            "_footer.cshtml",
-            "_header.cshtml",
-            "_menu.cshtml",
-            "_page.cshtml",
-            "layout.cshtml"};
+            "_blog_index.html",
+            "_footer.html",
+            "_header.html",
+            "_menu.html",
+            "_page.html",
+            "layout.html"};
         public static Status status = Status.Nothing;
 
 
@@ -37,29 +37,34 @@ namespace Haiku
             foreach (var folder in Folders)
             {
                 Helper.CreateFolder(path, folder);
-                var filename = "";
-                var file = "";
+                if (folder is "pages" || folder is "posts")
+                {
+                    var filename = "";
+                    var file = "";
 
-                if (folder is "posts")
-                {
-                    var date = DateTime.Today.ToString("yyyy-MM-dd");
-                    file = "hello_world.md";
-                    filename = $"{date}-{file}";
+                    if (folder is "posts")
+                    {
+                        var date = DateTime.Today.ToString("yyyy-MM-dd");
+                        file = "hello_world.md";
+                        filename = $"{date}-{file}";
+                    }
+                    else if (folder is "pages")
+                    {
+                        file = "about.md";
+                        filename = $"{file}";
+                    }
+                    var directory = Path.Combine(path, folder);
+                    var filePath = Path.Combine(directory, filename);
+                    if (!File.Exists(directory))
+                        Helper.CreateResource(filePath, "Haiku.Resources.Examples", file);
                 }
-                else
-                {
-                    file = "about.md";
-                    filename = $"{file}";
-                }
-                var directory = Path.Combine(path, folder);
-                var filePath = Path.Combine(directory, filename);
-                if (!File.Exists(directory))
-                    Helper.WriteSampleResource(filePath, "Haiku.Resources.Examples", file);
             }
             foreach (var file in TemplateFiles)
             {
-                var filepath = Path.Combine(path, Folders[Folders.Length-1], file);
-                Helper.WriteSampleResource(filepath, "Haiku.Resources.Template", file);
+                var filepath = Path.Combine(path, Folders[Folders.Length - 1], file);
+                var directory = Path.Combine(path, Folders[Folders.Length - 1]);
+                Helper.CreateResource(directory, "Haiku.Resources.Template", file);
+                // Helper.CreateFile(folderpath, file);
             }
             Helper.CreateFile(path, ConfigFile);
             ReportProjectCreation(path);
