@@ -6,38 +6,33 @@ namespace Haiku
 {
     public class CLI
     {
-        public static CLI obj { get; set; }
-        public static List<Command> Commands = new List<Command>();
-        public static string Argument { get; set; }
-        public static string Option { get; set; }
-        private Command _default { get; set; }
+        private static List<Command> Commands = new List<Command>();
+        private static string _argument { get; set; }
+        private static string _option { get; set; }
+        private static Command _help { get; set; }
         private static readonly ConsoleColor _defaultConsoleColor = Console.ForegroundColor;
 
 
         public void Run(string[] args)
         {
+            _help = SetCommand(new Command
+            {
+                Name = "help",
+                Description = " Prints this text, or any given command's Help.",
+                Help = "Seriously?",
+                Method = CLI.Help
+            });
+
             Parse(args);
-            var command = FindCommand(Argument);
-            if (command != null)
-            {
-                command.Execute();
-            }
-            else
-            {
-                _default.Execute();
-            }
+            var command = FindCommandOrHelp(_argument);
+            command?.Execute();
         }
+
 
         private static void Parse(string[] args)
         {
-            Argument = (args.Length > 0) ? args[0] : null;
-            Option = (args.Length > 1) ? args[1] : null;
-        }
-
-        public Command DefaultCommand(Command command)
-        {
-            _default = SetCommand(command);
-            return command;
+            _argument = (args.Length > 0) ? args[0] : null;
+            _option = (args.Length > 1) ? args[1] : null;
         }
 
 
@@ -45,12 +40,6 @@ namespace Haiku
         {
             Commands.Add(command);
             return command;
-        }
-
-        public void CreateCommand(string name, string description, string argument, Action method)
-        {
-            var cmd = new Command(name, description, argument, method);
-            Commands.Add(cmd);
         }
 
 
@@ -63,20 +52,57 @@ namespace Haiku
         }
 
 
+        private static Command FindCommandOrHelp(string arg)
+        {
+            var command = FindCommand(arg);
+            if (command != null)
+                return command;
+            else
+                return FindCommand("help");
+        }
+
+
         public static bool OptionWasGiven()
         {
-            return Option != null;
+            return _option != null;
         }
 
 
         public static string GetOption()
         {
-            return Option;
+            return _option;
         }
+
 
         public static bool OptionIsCommand(string arg)
         {
-            return FindCommand(arg) != null && arg != "help";
+            return FindCommand(arg) != null;
+        }
+
+
+        public static void Help()
+        {
+            Console.WriteLine($"{Program.AppName} v{Program.AppVersion}\n");
+            if (OptionWasGiven() && OptionIsCommand(_option))
+            {
+                var cmd = FindCommand(_option);
+                Console.WriteLine($"Usage: {Program.AppName.ToLower()} {cmd.Name} [argument]");
+                if (cmd.Argument != null)
+                {
+                    Console.WriteLine("\nArguments:");
+                    Console.WriteLine($"  [{cmd.Argument}]  {cmd.Help}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Usage: {Program.AppName.ToLower()} [command] [option]\n");
+                Console.WriteLine("Commands:");
+                foreach (var command in Commands)
+                {
+                    Console.WriteLine($"  {command.Name}: {command.Description}");
+                }
+                Console.WriteLine($"\nUse \"{Program.AppName.ToLower()} help [command]\" for more information about a command.");
+            }
         }
 
 

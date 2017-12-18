@@ -9,15 +9,6 @@ namespace Haiku
         public string Argument { get; set; }
         public string Help { get; set; }
         public Action Method { get; set; }
-        
-
-        public Command(string name, string description, string argument, Action method)
-        {
-            Name = name.ToLower();
-            Description = description;
-            Argument = argument;
-            Method = method;
-        }
 
 
         public void Execute()
