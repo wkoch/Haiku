@@ -73,7 +73,7 @@ namespace Haiku
             {
                 var folderPath = System.IO.Path.GetDirectoryName(folder);
                 var folderName = System.IO.Path.GetFileName(folder);
-                Files.Add(new File { Path = folderPath, Name = folderName });
+                Folders.Add(new Folder(folderPath, folderName));
             }
         }
 
@@ -85,7 +85,7 @@ namespace Haiku
             {
                 var filepath = System.IO.Path.GetDirectoryName(file);
                 var filename = System.IO.Path.GetFileName(file);
-                Files.Add(new File { Path = filepath, Name = filename });
+                Files.Add(new File(filepath, filename));
             }
         }
     }

@@ -8,7 +8,7 @@ namespace Haiku
     class Program
     {
         public static readonly string AppName = "Haiku";
-        public static readonly string AppVersion = "0.3.0";
+        public static readonly string AppVersion = "0.4.0";
 
 
         static void Main(string[] args)
