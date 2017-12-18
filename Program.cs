@@ -7,44 +7,67 @@ namespace Haiku
 {
     class Program
     {
-        public static string AppName = "Haiku";
-        public static string AppVersion = "0.1.0";
+        public static readonly string AppName = "Haiku";
+        public static readonly string AppVersion = "0.2.0";
+        public static readonly string DefaultFolder = "HaikuWebsite";
+
+
+
         static void Main(string[] args)
         {
-            Cli cli = new Cli();
+            CLI.obj = new CLI();
+            var cli = CLI.obj;
 
-            cli.SetCommand(new Command("New", "Creates a new project, optional directory.", New));
-            cli.SetCommand(new Command("Build", "Builds existing project, optional directory", Build));
-            cli.DefaultCommand(new Command("Help", "Prints this Help text.", Help));
+            var NewCmd = cli.SetCommand(new Command("new", "  Creates a new project. Optional folder.", "folder",  New));
+            NewCmd.Help = "Path for creating a new project.";
 
-            cli.Parse(args);
+            var BuildCmd = cli.SetCommand(new Command("build", "Builds an existing project. Optional folder.", "folder", Build));
+            BuildCmd.Help = "Path to an existing project.";
 
-            // var haiku = new WebSite();
+            cli.DefaultCommand(new Command("help", " Prints this text, or any given command's Help.", null, Help));
+
+            cli.Run(args);
         }
 
-        
 
         public static void New()
         {
-            if (Cli.Option != null)
-                Console.WriteLine($"Creating a new project in {Cli.Option}.");
+            if (CLI.OptionWasGiven())
+                Console.WriteLine($"Creating a new project in {CLI.GetOption()}.");
             else
                 Console.WriteLine("Creating a new project.");
         }
 
+
         public static void Build()
         {
-            Console.WriteLine("Building this project.");
+            if (CLI.OptionWasGiven())
+                Console.WriteLine($"Building the project in {CLI.GetOption()}.");
+            else
+                Console.WriteLine("Building this project.");
         }
+
 
         public static void Help()
         {
             Console.WriteLine($"{AppName} v{AppVersion}\n");
-            System.Console.WriteLine("Usage:\n  haiku [Command] [Option]\n");
-            System.Console.WriteLine("Commands:");
-            foreach (var command in Cli.Commands)
+
+            if (CLI.OptionWasGiven() && CLI.OptionIsCommand(CLI.Option))
             {
-                System.Console.WriteLine($"  {command.Name}: {command.Description}");
+                var cmd = CLI.FindCommand(CLI.Option);
+                Console.WriteLine($"Usage: {AppName.ToLower()} {cmd.Name} [argument]\n");
+                Console.WriteLine("Arguments:");
+                Console.WriteLine($"  [path]  {cmd.Help}");
+            }
+            else
+            {
+                Console.WriteLine($"Usage: {AppName.ToLower()} [command] [option]\n");
+                Console.WriteLine("Commands:");
+                foreach (var command in CLI.Commands)
+                {
+                    Console.WriteLine($"  {command.Name}: {command.Description}");
+                }
+                Console.WriteLine($"\nUse \"{AppName.ToLower()} help [command]\" for more information about a command.");
             }
         }
     }
