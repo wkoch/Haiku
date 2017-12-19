@@ -19,8 +19,10 @@ namespace Haiku
             (folder: "template", file: "_page.html"),
             (folder: "template", file: "layout.html"),
         };
-        readonly private Config _config;
+        private Config _config;
         private Status _status = Status.Nothing;
+
+        private bool IsHaikuProject() => (_baseFolder.Exists() && _config.File.Exists());
 
 
         public WebSite(string folder)
@@ -28,6 +30,10 @@ namespace Haiku
             var baseFolderName = (folder != null) ? folder : "HaikuWebsite";
             _baseFolder = new Folder(null, baseFolderName);
             _config = new Config(_baseFolder, Program.AppName, "conf");
+        }
+
+        public void New()
+        {
             foreach (var _folder in _folders)
             {
                 var dir = new Folder(_baseFolder, _folder);
@@ -36,19 +42,13 @@ namespace Haiku
                 {
                     if (_folder == resource.folder)
                     {
-                        // System.Console.WriteLine(Path.Combine(_baseFolder.RelativePath,resource.folder));
-                        // System.Console.WriteLine($"{dir.Name} {resource.file}");
                         dir.Files.Add(File.FromResource(new File(dir, resource.file)));
                     }
                 }
             }
-        }
 
-        public void New()
-        {
             Console.WriteLine($"Creating a new project in {_baseFolder.Name}.\n");
             CreateFolders();
-            
 
             if (_status is Status.Success)
                 Helper.SuccessMessage("Project created successfully.");
@@ -82,7 +82,18 @@ namespace Haiku
 
         public void Build()
         {
-            // check existing project
+            if (IsHaikuProject())
+            {
+                Console.WriteLine($"Building project in {_baseFolder.Name}.\n");
+
+            }
+            else
+            {
+                CLI.RedText();
+                Console.Write("Aborting: ");
+                CLI.DefaultColor();
+                Console.Write("Folder is not a valid Haiku project.\n");
+            }
             // read config
             // load template
             // load content

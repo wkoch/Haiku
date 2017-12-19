@@ -8,7 +8,7 @@ namespace Haiku
     class Program
     {
         public static readonly string AppName = "Haiku";
-        public static readonly string AppVersion = "0.5.0";
+        public static readonly string AppVersion = "0.6.0";
 
 
         static void Main(string[] args)
@@ -46,10 +46,8 @@ namespace Haiku
 
         public static void Build()
         {
-            if (CLI.OptionWasGiven())
-                System.Console.WriteLine($"Building the project in {CLI.GetOption()}.");
-            else
-                System.Console.WriteLine("Building this project.");
+            var haiku = new WebSite(CLI.GetOption());
+            haiku.Build();
         }
     }
 }

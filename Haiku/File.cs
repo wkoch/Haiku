@@ -27,6 +27,12 @@ namespace Haiku
         }
 
 
+        public bool Exists()
+        {
+            return System.IO.File.Exists(FilePath);
+        }
+
+
         public Status Create()
         {
             CLI.BlueText();

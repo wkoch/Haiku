@@ -33,9 +33,9 @@ namespace Haiku
         }
 
 
-        public void Exists()
+        public bool Exists()
         {
-            Directory.Exists(RelativePath);
+            return Directory.Exists(RelativePath);
         }
 
 
