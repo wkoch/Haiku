@@ -53,7 +53,7 @@ namespace Haiku
             if (_status is Status.Success)
                 Helper.SuccessMessage("Project created successfully.");
             else
-                Helper.ErrorMessage();
+                Helper.ErrorMessage("An error occured. Something might be on Fire");
         }
 
         private void CreateFolders()
@@ -69,8 +69,8 @@ namespace Haiku
                 CreateFiles(folder);
             }
         }
-
-        private void CreateFiles(Folder folder)
+            // Load Folders
+            // Load Files        private void CreateFiles(Folder folder)
         {
             foreach (var file in folder.Files)
             {
@@ -85,20 +85,28 @@ namespace Haiku
             if (IsHaikuProject())
             {
                 Console.WriteLine($"Building project in {_baseFolder.Name}.\n");
+                LoadFiles();
 
             }
             else
             {
-                CLI.RedText();
-                Console.Write("Aborting: ");
-                CLI.DefaultColor();
-                Console.Write("Folder is not a valid Haiku project.\n");
+                Helper.ErrorMessage("Aborting. Folder is not a valid Haiku project.");
             }
-            // read config
-            // load template
-            // load content
+            // Process Markdown
             // copy static files
             // build html files
+        }
+
+        private void LoadFiles()
+        {
+            Console.Write("- Loading project files: ");
+            _baseFolder.ListFolders();
+            _baseFolder.ListFiles();
+            foreach (var folder in _baseFolder.Folders)
+            {
+                folder.ListFiles();
+            }
+            Helper.Success();
         }
     }
 }

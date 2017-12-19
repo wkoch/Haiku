@@ -33,6 +33,12 @@ namespace Haiku
         }
 
 
+        public void ReadContents()
+        {
+            Contents = System.IO.File.ReadAllText(FilePath);
+        }
+
+
         public Status Create()
         {
             CLI.BlueText();

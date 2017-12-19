@@ -28,10 +28,10 @@ namespace Haiku
             CLI.DefaultColor();
         }
 
-        public static void ErrorMessage()
+        public static void ErrorMessage(string msg)
         {
             CLI.RedText();
-            System.Console.WriteLine("\nAn error occured. Something might be on Fire.");
+            System.Console.WriteLine($"\n{msg}.");
             CLI.DefaultColor();
         }
 
