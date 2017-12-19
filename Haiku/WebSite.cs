@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Haiku
 {
@@ -69,8 +70,8 @@ namespace Haiku
                 CreateFiles(folder);
             }
         }
-            // Load Folders
-            // Load Files        private void CreateFiles(Folder folder)
+
+        private void CreateFiles(Folder folder)
         {
             foreach (var file in folder.Files)
             {
@@ -86,20 +87,19 @@ namespace Haiku
             {
                 Console.WriteLine($"Building project in {_baseFolder.Name}.\n");
                 LoadFiles();
-
+                makeHTML("pages");
             }
             else
             {
                 Helper.ErrorMessage("Aborting. Folder is not a valid Haiku project.");
             }
-            // Process Markdown
             // copy static files
             // build html files
         }
 
         private void LoadFiles()
         {
-            Console.Write("- Loading project files: ");
+            Console.Write("- Reading project files: ");
             _baseFolder.ListFolders();
             _baseFolder.ListFiles();
             foreach (var folder in _baseFolder.Folders)
@@ -107,6 +107,29 @@ namespace Haiku
                 folder.ListFiles();
             }
             Helper.Success();
+        }
+
+        private void makeHTML(string name)
+        {
+            var folder = _baseFolder.FindFolder(name);
+            var file = _baseFolder.FindFile("about");
+            if (folder is null || file is null)
+            {
+                System.Console.WriteLine($"Error! {folder} {file}");
+            }
+            else
+            {
+                // System.Console.WriteLine(folder.Name);
+                var layout = _baseFolder.FindFile("layout");
+                var header = _baseFolder.FindFile("_header");
+                var footer = _baseFolder.FindFile("_footer");
+                var page = _baseFolder.FindFile("_page");
+                header.Contents = header.Contents.Replace("@Page.Title", file.Name);
+                layout.Contents = layout.Contents.Replace("@Html.Partial(_header)", header.Contents);
+                layout.Contents = layout.Contents.Replace("@Html.Partial(_footer)", footer.Contents);
+                layout.Contents = layout.Contents.Replace("@Html.Render(Content)", file.Contents);
+                layout.SaveAs("HaikuWebsite/public/about.html");
+            }
         }
     }
 }

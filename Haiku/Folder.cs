@@ -7,7 +7,6 @@ namespace Haiku
 {
     public class Folder
     {
-        // public string Path { get; set; }
         public Folder Parent { get; set; }
         public string Name { get; set; }
         public string RelativePath { get; set; }
@@ -15,6 +14,25 @@ namespace Haiku
         public List<Folder> Folders = new List<Folder>();
         public List<File> Files = new List<File>();
         public Status _status = Status.Nothing;
+
+
+        public Folder FindFolder(string name)
+        {
+            var getFolder = from folder in Folders
+                             where folder.Name == name
+                             select folder;
+            return getFolder.FirstOrDefault();
+        }
+
+
+        public File FindFile(string name)
+        {
+            var getFile = from folder in Folders
+                          from file in folder.Files
+                          where file.Name == name
+                          select file;
+            return getFile.FirstOrDefault();
+        }
 
 
         public Folder(Folder parent, string name)
