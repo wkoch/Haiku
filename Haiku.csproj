@@ -4,7 +4,8 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources/Examples/*.md" />
-    <EmbeddedResource Include="Resources/Template/*.cshtml" />
+    <EmbeddedResource Include="Resources/pages/*.md" />
+    <EmbeddedResource Include="Resources/posts/*.md" />
+    <EmbeddedResource Include="Resources/template/*.html" />
   </ItemGroup>
 </Project>

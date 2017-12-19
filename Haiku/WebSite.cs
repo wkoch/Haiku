@@ -16,7 +16,7 @@ namespace Haiku
             (folder: "template", file: "_footer.html"),
             (folder: "template", file: "_header.html"),
             (folder: "template", file: "_menu.html"),
-            (folder: "template", file: "_page.ghtml"),
+            (folder: "template", file: "_page.html"),
             (folder: "template", file: "layout.html"),
         };
         readonly private Config _config;
@@ -25,18 +25,20 @@ namespace Haiku
 
         public WebSite(string folder)
         {
-            var path = (folder != null) ? folder : "HaikuWebsite";
-            _baseFolder = new Folder("", path);
-            _config = new Config(_baseFolder.FullPath, Program.AppName, "conf");
+            var baseFolderName = (folder != null) ? folder : "HaikuWebsite";
+            _baseFolder = new Folder(null, baseFolderName);
+            _config = new Config(_baseFolder, Program.AppName, "conf");
             foreach (var _folder in _folders)
             {
-                var dir = new Folder(_baseFolder.FullPath, _folder);
+                var dir = new Folder(_baseFolder, _folder);
                 _baseFolder.Folders.Add(dir);
                 foreach (var resource in _resources)
                 {
                     if (_folder == resource.folder)
                     {
-                        dir.Files.Add(Resource.FileFromResource(resource.folder, resource.file));
+                        // System.Console.WriteLine(Path.Combine(_baseFolder.RelativePath,resource.folder));
+                        // System.Console.WriteLine($"{dir.Name} {resource.file}");
+                        dir.Files.Add(File.FromResource(new File(dir, resource.file)));
                     }
                 }
             }
@@ -49,9 +51,9 @@ namespace Haiku
             
 
             if (_status is Status.Success)
-            {
                 Helper.SuccessMessage("Project created successfully.");
-            }
+            else
+                Helper.ErrorMessage();
         }
 
         private void CreateFolders()
@@ -63,10 +65,7 @@ namespace Haiku
             {
                 _status = folder.Create();
                 if (_status is Status.Error)
-                {
-                    Helper.ErrorMessage();
                     break;
-                }
                 CreateFiles(folder);
             }
         }
@@ -77,10 +76,7 @@ namespace Haiku
             {
                 _status = file.Create();
                 if (_status is Status.Error)
-                {
-                    Helper.ErrorMessage();
                     break;
-                }
             }
         }
 

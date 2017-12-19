@@ -4,9 +4,9 @@ namespace Haiku
     {
         public File File;
 
-        public Config(string path, string name, string extension)
+        public Config(Folder folder, string name, string extension)
         {
-            File = new File(path, $"{name}.{extension}");
+            File = new File(folder, $"{name}.{extension}");
         }
     }
 }

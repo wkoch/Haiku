@@ -1,26 +1,29 @@
 using System;
+using Stream = System.IO.Stream;
+using StreamReader = System.IO.StreamReader;
+using System.Resources;
+using System.Reflection;
+using System.Collections;
 
 namespace Haiku
 {
     public class File
     {
-        public string Path { get; set; }
+        public Folder Parent { get; set; }
         public string Name { get; set; }
         public string Extension { get; set; }
-        public string FullPath { get; set; }
+        public string FilePath { get; set; }
         public string Contents { get; set; }
-        public Folder Parent { get; set; }
         public Status _status = Status.Nothing;
 
 
-        public File(string path, string name)
+        public File(Folder folder, string filename)
         {
-            Path = path;
-            Name = System.IO.Path.GetFileNameWithoutExtension(name);
-            // System.Console.WriteLine(Name);
-            // Extension = System.IO.Path.GetExtension(name);
-            // System.Console.WriteLine(Extension);
-            FullPath = System.IO.Path.Combine(Path, name);
+            // Path = path;
+            Name = System.IO.Path.GetFileNameWithoutExtension(filename);
+            Extension = System.IO.Path.GetExtension(filename);
+            Parent = folder;
+            FilePath = System.IO.Path.Combine(folder.RelativePath, filename);
         }
 
 
@@ -29,13 +32,13 @@ namespace Haiku
             CLI.BlueText();
             Console.Write("Creating ");
             CLI.CyanText();
-            Console.Write($"{FullPath}: ");
+            Console.Write($"{FilePath}: ");
             try
             {
                 if (Contents != null)
-                    System.IO.File.WriteAllText(FullPath, Contents);
+                    System.IO.File.WriteAllText(FilePath, Contents);
                 else
-                    System.IO.File.Create(FullPath);
+                    System.IO.File.Create(FilePath);
             }
             catch (System.Exception)
             {
@@ -55,6 +58,16 @@ namespace Haiku
 
             }
             return _status;
+        }
+
+        public static File FromResource(File file)
+        {
+            var assembly = typeof(Haiku.Program).GetTypeInfo().Assembly;
+            var resourceName = "Haiku.Resources." + file.Parent.Name + "." + file.Name + file.Extension;
+            Stream stream = assembly.GetManifestResourceStream(resourceName);
+            StreamReader reader = new StreamReader(stream);
+            file.Contents = reader.ReadToEnd();
+            return file;
         }
     }
 }

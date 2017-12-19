@@ -7,25 +7,35 @@ namespace Haiku
 {
     public class Folder
     {
-        public string Path { get; set; }
+        // public string Path { get; set; }
+        public Folder Parent { get; set; }
         public string Name { get; set; }
-        public string FullPath { get; set; }
+        public string RelativePath { get; set; }
+        // public string FullPath { get; set; }
         public List<Folder> Folders = new List<Folder>();
         public List<File> Files = new List<File>();
         public Status _status = Status.Nothing;
 
 
-        public Folder(string path, string name)
+        public Folder(Folder parent, string name)
         {
-            Path = path;
+            if (parent is null)
+            {
+                Parent = this;
+                RelativePath = name;
+            }
+            else
+            {
+                Parent = parent;
+                RelativePath = System.IO.Path.Combine(Parent.RelativePath, name);
+            }
             Name = name;
-            FullPath = System.IO.Path.Combine(Path, Name);
         }
 
 
         public void Exists()
         {
-            Directory.Exists(FullPath);
+            Directory.Exists(RelativePath);
         }
 
 
@@ -34,10 +44,10 @@ namespace Haiku
             CLI.BlueText();
             Console.Write("Creating ");
             CLI.CyanText();
-            Console.Write($"{FullPath}: ");
+            Console.Write($"{RelativePath}: ");
             try
             {
-                Directory.CreateDirectory(FullPath);
+                Directory.CreateDirectory(RelativePath);
             }
             catch (System.Exception)
             {
@@ -62,30 +72,30 @@ namespace Haiku
 
         public void Delete()
         {
-            Directory.Delete(FullPath, true);
+            Directory.Delete(RelativePath, true);
         }
 
 
         public void ListFolders()
         {
-            var folders = Directory.GetDirectories(FullPath);
+            var folders = Directory.GetDirectories(RelativePath);
             foreach (var folder in folders)
             {
                 var folderPath = System.IO.Path.GetDirectoryName(folder);
                 var folderName = System.IO.Path.GetFileName(folder);
-                Folders.Add(new Folder(folderPath, folderName));
+                // Folders.Add(new Folder(self, folderName));
             }
         }
 
 
         public void ListFiles()
         {
-            var files = Directory.GetFiles(FullPath);
+            var files = Directory.GetFiles(RelativePath);
             foreach (var file in files)
             {
                 var filepath = System.IO.Path.GetDirectoryName(file);
                 var filename = System.IO.Path.GetFileName(file);
-                Files.Add(new File(filepath, filename));
+                // Files.Add(new File(filepath, filename));
             }
         }
     }
