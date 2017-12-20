@@ -11,14 +11,25 @@ namespace Haiku
         readonly private string[] _folders = { "pages", "posts", "public", "template" };
         private (string folder, string file)[] _resources =
         {
+            // Samples for Pages and Posts
             (folder: "pages", file: "about.md"),
             (folder: "posts", file: "2017-12-20-hello_world.md"),
-            (folder: "template", file: "_blog_index.html"),
+
+            // Template layout files
+            (folder: "template", file: "layout.html"),
             (folder: "template", file: "_footer.html"),
             (folder: "template", file: "_header.html"),
             (folder: "template", file: "_menu.html"),
+            (folder: "template", file: "_menu_item.html"),
+
+            // Template for Blog and its partials
+            (folder: "template", file: "_blog.html"),
+            (folder: "template", file: "_blog_post.html"),
+
+            // Template for Pages and Posts
             (folder: "template", file: "_page.html"),
-            (folder: "template", file: "layout.html"),
+            (folder: "template", file: "_post.html"),
+            
         };
         private Config _config;
         private Status _status = Status.Nothing;
@@ -130,6 +141,41 @@ namespace Haiku
                 layout.Contents = layout.Contents.Replace("@Html.Render(Content)", file.Contents);
                 layout.SaveAs("HaikuWebsite/public/about.html");
             }
+        }
+
+        private void BuildIndex()
+        {
+            var index = _baseFolder.FindFile("index");
+            if (index is null)
+            {
+                // Builds blog as index
+            }
+            else
+            {
+                // Builds index file as a page
+                // and Blog as /blog
+            }
+
+        }
+
+        private void BuildBlog()
+        {
+            
+        }
+
+        private void BuildPost()
+        {
+            
+        }
+
+        private void BuildPage()
+        {
+            
+        }
+
+        private void BuildArchive()
+        {
+            
         }
     }
 }
