@@ -1,125 +1,230 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Haiku
 {
     public class WebSite
     {
-        private string[] Folders = { "pages", "posts", "public", "template" };
-        private string ConfigFile = "config.toml";
-        private string[] TemplateFiles = {
-            "_blog_index.html",
-            "_footer.html",
-            "_header.html",
-            "_menu.html",
-            "_page.html",
-            "layout.html"};
-        public static Status status = Status.Nothing;
-
-
-        private bool IsHaikuProject(string path) => (Directory.Exists(path) && File.Exists(Path.Combine(path, ConfigFile)));
-
-
-        public void New(string path)
+        private Folder _baseFolder;
+        readonly private string[] _folders = { "pages", "posts", "public", "template" };
+        private (string folder, string file)[] _resources =
         {
-            if (IsHaikuProject(path))
-                AbortMessage("Project already exists.");
-            else
-                CreateProject(path);
+            // Samples for Pages and Posts
+            (folder: "pages", file: "about.md"),
+            (folder: "posts", file: "2017-12-20-hello_world.md"),
+
+            // Template layout files
+            (folder: "template", file: "layout.html"),
+            (folder: "template", file: "_footer.html"),
+            (folder: "template", file: "_header.html"),
+            (folder: "template", file: "_menu.html"),
+            (folder: "template", file: "_menu_item.html"),
+
+            // Template for Blog and its partials
+            (folder: "template", file: "_blog.html"),
+            (folder: "template", file: "_blog_post.html"),
+
+            // Template for Pages and Posts
+            (folder: "template", file: "_page.html"),
+            (folder: "template", file: "_post.html"),
+
+        };
+        private Config _config;
+        private Status _status = Status.Nothing;
+
+        private bool IsHaikuProject() => (_baseFolder.Exists() && _config.File.Exists());
+
+
+        public WebSite(string folder)
+        {
+            var baseFolderName = (folder != null) ? folder : "HaikuWebsite";
+            _baseFolder = new Folder(null, baseFolderName);
+            _config = new Config(_baseFolder, Program.AppName, "conf");
         }
 
-
-        private void CreateProject(string path)
+        public void New()
         {
-            Console.WriteLine($"Creating a new project: {path}.\n");
-
-            foreach (var folder in Folders)
+            foreach (var _folder in _folders)
             {
-                Helper.CreateFolder(path, folder);
-                if (folder is "pages" || folder is "posts")
+                var dir = new Folder(_baseFolder, _folder);
+                _baseFolder.Folders.Add(dir);
+                foreach (var resource in _resources)
                 {
-                    var filename = "";
-                    var file = "";
-
-                    if (folder is "posts")
+                    if (_folder == resource.folder)
                     {
-                        var date = DateTime.Today.ToString("yyyy-MM-dd");
-                        file = "hello_world.md";
-                        filename = $"{date}-{file}";
+                        dir.Files.Add(File.FromResource(new File(dir, resource.file)));
                     }
-                    else if (folder is "pages")
-                    {
-                        file = "about.md";
-                        filename = $"{file}";
-                    }
-                    var directory = Path.Combine(path, folder);
-                    var filePath = Path.Combine(directory, filename);
-                    if (!File.Exists(directory))
-                        Helper.CreateResource(filePath, "Haiku.Resources.Examples", file);
                 }
             }
-            foreach (var file in TemplateFiles)
-            {
-                var filepath = Path.Combine(path, Folders[Folders.Length - 1], file);
-                var directory = Path.Combine(path, Folders[Folders.Length - 1]);
-                Helper.CreateResource(directory, "Haiku.Resources.Template", file);
-                // Helper.CreateFile(folderpath, file);
-            }
-            Helper.CreateFile(path, ConfigFile);
-            ReportProjectCreation(path);
+
+            Console.WriteLine($"Creating a new project in {_baseFolder.Name}.\n");
+            CreateFolders();
+
+            if (_status is Status.Success)
+                Helper.SuccessMessage("Project created successfully.");
+            else
+                Helper.ErrorMessage("An error occured. Something might be on Fire");
         }
 
-
-        private void ReportProjectCreation(string path)
+        private void CreateFolders()
         {
-            if (status is Status.Success)
+            _status = _baseFolder.Create();
+            _status = _config.File.Create();
+
+            foreach (var folder in _baseFolder.Folders)
             {
-                Helper.GreenText();
-                Console.WriteLine($"\nProject \"{path}\" created successfuly.");
-                Helper.DefaultColor();
+                _status = folder.Create();
+                if (_status is Status.Error)
+                    break;
+                CreateFiles(folder);
+            }
+        }
+
+        private void CreateFiles(Folder folder)
+        {
+            foreach (var file in folder.Files)
+            {
+                _status = file.Create();
+                if (_status is Status.Error)
+                    break;
+            }
+        }
+
+        public void Build()
+        {
+            if (IsHaikuProject())
+            {
+                Console.WriteLine($"Building project in {_baseFolder.Name}.\n");
+                LoadFiles();
+                // makeHTML("pages");
+                PrepareLayout();
+                makeHTML("posts");
             }
             else
             {
-                Helper.RedText();
-                Console.WriteLine($"\nAn error ocurred while creating project {path}.");
-                Helper.DefaultColor();
+                Helper.ErrorMessage("Aborting. Folder is not a valid Haiku project.");
             }
+            // copy static files
+            // build html files
         }
 
-
-        private void AbortMessage(string msg)
+        private void LoadFiles()
         {
-            Helper.RedText();
-            Console.WriteLine($"Aborted: {msg}");
-            Helper.DefaultColor();
-        }
-
-
-        public void Build(string path)
-        {
-            if (IsHaikuProject(path))
+            Console.Write("- Reading project files: ");
+            _baseFolder.ListFolders();
+            _baseFolder.ListFiles();
+            foreach (var folder in _baseFolder.Folders)
             {
-                Console.WriteLine($"Building project: {path}.");
-                ProcessPosts("HaikuWebsite/posts", "HaikuWebsite/public");
+                folder.ListFiles();
+            }
+            Helper.Success();
+        }
+
+        private void makeHTML(string name)
+        {
+            // var folder = _baseFolder.FindFolder(name);
+            // var file = _baseFolder.FindFile("about");
+            // if (folder is null || file is null)
+            // {
+            //     System.Console.WriteLine($"Error! {folder} {file}");
+            // }
+            // else
+            // {
+            //     // System.Console.WriteLine(folder.Name);
+            //     var layout = _baseFolder.FindFile("layout");
+            //     var header = _baseFolder.FindFile("_header");
+            //     var footer = _baseFolder.FindFile("_footer");
+            //     var page = _baseFolder.FindFile("_page");
+            //     header.Contents = header.Contents.Replace("@Page.Title", file.Name);
+            //     layout.Contents = layout.Contents.Replace("@Html.Partial(_header)", header.Contents);
+            //     layout.Contents = layout.Contents.Replace("@Html.Partial(_footer)", footer.Contents);
+            //     layout.Contents = layout.Contents.Replace("@Html.Render(Content)", file.Contents);
+            //     layout.SaveAs("HaikuWebsite/public/about.html");
+            // }
+            var folder = _baseFolder.FindFolder(name);
+
+            var layout = _baseFolder.FindFile("layout");
+            var header = _baseFolder.FindFile("_header");
+            // var footer = _baseFolder.FindFile("_footer");
+            var page = _baseFolder.FindFile("_post");
+            var html = layout.HTML;
+            foreach (var file in folder.Files)
+            {
+                var hd = header.Contents.Replace("@Page.Title", file.Name);
+                layout.HTML = layout.HTML.Replace("@Html.Partial(_header)", hd);
+                layout.HTML = layout.HTML.Replace("@Html.Render(Content)", file.Markdown);
+                var pub = _baseFolder.FindFolder("public");
+                layout.Publish($"{pub.RelativePath}/{file.Name}.html");
+            }
+            
+        }
+
+        private bool IsBlogIndex()
+        {
+            return (_baseFolder.FindFile("index") is null);
+        }
+
+        private void PrepareLayout()
+        {
+            var layout = _baseFolder.FindFile("layout");
+            PrepareMenu();
+            var menu = _baseFolder.FindFile("_menu");
+            var header = _baseFolder.FindFile("_header");
+            var footer = _baseFolder.FindFile("_footer");
+            footer.PrepareHTML();
+
+            layout.HTML = layout.Contents.Replace("@Html.Partial(_menu)", menu.HTML);
+            layout.HTML = layout.Contents.Replace("@Html.Partial(_footer)", footer.HTML);
+        }
+
+        private void PrepareMenu()
+        {
+            string itens = "";
+            string item = "";
+            var menu_template = _baseFolder.FindFile("_menu");
+            var item_template = _baseFolder.FindFile("_menu_item");
+            var pages = _baseFolder.FindFolder("pages").Files;
+            foreach (var page in pages)
+            {
+                item = item_template.Contents.Replace("@Page.Link", $"{page.Name.ToLower()}.html").Replace("@Page.Name", page.Name);
+                itens += item;
+            }
+            menu_template.HTML = menu_template.Contents.Replace("@HTML.Partial(_menu_item)", itens);
+        }
+
+        private void BuildIndex()
+        {
+            // Build index
+        }
+
+        private void BuildBlog()
+        {
+            if (IsBlogIndex())
+            {
+                // Build Blog as index
             }
             else
-                AbortMessage("Haiku project not found.");
+            {
+                BuildIndex();
+                // Build Blog as /blog
+            }
         }
 
-
-        private IEnumerable<string> ListContent(string folder) => Directory.EnumerateFiles(folder, "*.md");
-
-        private void ProcessPosts(string source, string destination)
+        private void BuildPost()
         {
-            foreach (var file in ListContent(source))
-            {
-                var content = File.ReadAllText(file);
-                var html = "<p>@post</p>".Replace("@post", content);
-                var filename = Path.GetFileName(file);
-                var newFile = Path.ChangeExtension(Path.Combine(destination, filename), "html");
-                File.WriteAllText(newFile, html);
-            }
+
+        }
+
+        private void BuildPage()
+        {
+
+        }
+
+        private void BuildArchive()
+        {
+
         }
     }
 }

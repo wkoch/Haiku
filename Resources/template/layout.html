@@ -24,13 +24,15 @@
   </head>
 
   <body>
-      @Html.Partial("Header")
+      @Html.Partial(_menu)
+      
+      @Html.Partial(_header)
 
-      @Html.Partial("Content")
+      @Html.Render(Content)
 
       <hr>
 
-      @Html.Partial("Footer")
+      @Html.Partial(_footer)
 
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 

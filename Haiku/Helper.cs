@@ -13,99 +13,33 @@ namespace Haiku
 
     public static class Helper
     {
-        private static ConsoleColor DefaultConsoleColor = Console.ForegroundColor;
-
-
-        public static void CreateFolder(string directory, string foldername)
+        public static void Error()
         {
-            var FolderPath = Path.Combine(directory, foldername);
-            CreateThis("Folder", FolderPath);
-        }
-
-
-        public static void CreateFile(string directory, string filename)
-        {
-            var FilePath = Path.Combine(directory, filename);
-            CreateThis("File", FilePath);
-        }
-
-
-        private static void CreateThis(string Type, string path, StreamReader reader = null)
-        {
-            CreationMessage(path);
-            try
-            {
-                if (Type is "File")
-                    File.Create(path);
-                else if (Type is "Folder")
-                    Directory.CreateDirectory(path);
-                else
-                    File.WriteAllText(path, reader.ReadToEnd());
-            }
-            catch (System.Exception)
-            {
-                WebSite.status = Status.Error;
-            }
-            finally
-            {
-                StatusMessage();
-            }
-            DefaultColor();
-        }
-
-
-        private static void StatusMessage()
-        {
-            if (WebSite.status is Status.Error)
-            {
-                ErrorMessage();
-            }
-            else
-            {
-                SuccessMessage();
-                WebSite.status = Status.Success;
-            }
-        }
-
-        private static void CreationMessage(string path)
-        {
-            BlueText();
-            Console.Write("Creating ");
-            CyanText();
-            Console.Write($"{path}: ");
-        }
-
-
-        public static void CreateResource(string path, string resource, string file)
-        {
-            var filepath = Path.Combine(path, file);
-            var assembly = typeof(Haiku.Program).GetTypeInfo().Assembly;
-            var resourceName = $"{resource}.{file}";
-            Stream stream = assembly.GetManifestResourceStream(resourceName);
-            StreamReader reader = new StreamReader(stream);
-            CreateThis("Resource", filepath, reader);
-        }
-
-
-        private static void ErrorMessage()
-        {
-            RedText();
+            CLI.RedText();
             Console.WriteLine("Error!");
+            CLI.DefaultColor();
         }
 
 
-        private static void SuccessMessage()
+        public static void Success()
         {
-            GreenText();
+            CLI.GreenText();
             Console.WriteLine("OK");
+            CLI.DefaultColor();
         }
 
-        public static void SetColor(ConsoleColor color) => Console.ForegroundColor = color;
-        public static void DefaultColor() => SetColor(DefaultConsoleColor);
-        public static void BlueText() => SetColor(ConsoleColor.Blue);
-        public static void CyanText() => SetColor(ConsoleColor.Cyan);
-        public static void GreenText() => SetColor(ConsoleColor.Green);
-        public static void RedText() => SetColor(ConsoleColor.Red);
-        public static void GrayText() => SetColor(ConsoleColor.Gray);
+        public static void ErrorMessage(string msg)
+        {
+            CLI.RedText();
+            System.Console.WriteLine($"\n{msg}.");
+            CLI.DefaultColor();
+        }
+
+        public static void SuccessMessage(string msg)
+        {
+            CLI.GreenText();
+            System.Console.WriteLine($"\n{msg}");
+            CLI.DefaultColor();
+        }
     }
 }
