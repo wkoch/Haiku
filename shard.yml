@@ -6,7 +6,7 @@ authors:
 
 targets:
   Haiku:
-    main: src/Haiku.cr
+    main: src/main.cr
 
 crystal: 0.23.1
 
