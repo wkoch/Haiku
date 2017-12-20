@@ -78,7 +78,7 @@ namespace Haiku
             return _status;
         }
 
-        public Status SaveAs(string filepath)
+        public Status Publish(string filepath)
         {
             CLI.BlueText();
             Console.Write("Creating ");
@@ -86,8 +86,8 @@ namespace Haiku
             Console.Write($"{filepath}: ");
             try
             {
-                if (Contents != null)
-                    System.IO.File.WriteAllText(filepath, Contents);
+                if (HTML != null)
+                    System.IO.File.WriteAllText(filepath, HTML);
                 else
                     System.IO.File.Create(filepath);
             }
@@ -133,6 +133,12 @@ namespace Haiku
             var contents = new StringReader(Contents);
             Title = contents.ReadLine();
             Markdown = markdown.Transform(contents.ReadToEnd());
+        }
+
+
+        public void PrepareHTML()
+        {
+            HTML = Contents;
         }
     }
 }

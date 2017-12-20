@@ -29,7 +29,7 @@ namespace Haiku
             // Template for Pages and Posts
             (folder: "template", file: "_page.html"),
             (folder: "template", file: "_post.html"),
-            
+
         };
         private Config _config;
         private Status _status = Status.Nothing;
@@ -98,7 +98,9 @@ namespace Haiku
             {
                 Console.WriteLine($"Building project in {_baseFolder.Name}.\n");
                 LoadFiles();
-                makeHTML("pages");
+                // makeHTML("pages");
+                PrepareLayout();
+                makeHTML("posts");
             }
             else
             {
@@ -122,60 +124,107 @@ namespace Haiku
 
         private void makeHTML(string name)
         {
+            // var folder = _baseFolder.FindFolder(name);
+            // var file = _baseFolder.FindFile("about");
+            // if (folder is null || file is null)
+            // {
+            //     System.Console.WriteLine($"Error! {folder} {file}");
+            // }
+            // else
+            // {
+            //     // System.Console.WriteLine(folder.Name);
+            //     var layout = _baseFolder.FindFile("layout");
+            //     var header = _baseFolder.FindFile("_header");
+            //     var footer = _baseFolder.FindFile("_footer");
+            //     var page = _baseFolder.FindFile("_page");
+            //     header.Contents = header.Contents.Replace("@Page.Title", file.Name);
+            //     layout.Contents = layout.Contents.Replace("@Html.Partial(_header)", header.Contents);
+            //     layout.Contents = layout.Contents.Replace("@Html.Partial(_footer)", footer.Contents);
+            //     layout.Contents = layout.Contents.Replace("@Html.Render(Content)", file.Contents);
+            //     layout.SaveAs("HaikuWebsite/public/about.html");
+            // }
             var folder = _baseFolder.FindFolder(name);
-            var file = _baseFolder.FindFile("about");
-            if (folder is null || file is null)
+
+            var layout = _baseFolder.FindFile("layout");
+            var header = _baseFolder.FindFile("_header");
+            // var footer = _baseFolder.FindFile("_footer");
+            var page = _baseFolder.FindFile("_post");
+            var html = layout.HTML;
+            foreach (var file in folder.Files)
             {
-                System.Console.WriteLine($"Error! {folder} {file}");
+                var hd = header.Contents.Replace("@Page.Title", file.Name);
+                layout.HTML = layout.HTML.Replace("@Html.Partial(_header)", hd);
+                layout.HTML = layout.HTML.Replace("@Html.Render(Content)", file.Markdown);
+                var pub = _baseFolder.FindFolder("public");
+                layout.Publish($"{pub.RelativePath}/{file.Name}.html");
             }
-            else
+            
+        }
+
+        private bool IsBlogIndex()
+        {
+            return (_baseFolder.FindFile("index") is null);
+        }
+
+        private void PrepareLayout()
+        {
+            var layout = _baseFolder.FindFile("layout");
+            PrepareMenu();
+            var menu = _baseFolder.FindFile("_menu");
+            var header = _baseFolder.FindFile("_header");
+            var footer = _baseFolder.FindFile("_footer");
+            footer.PrepareHTML();
+
+            layout.HTML = layout.Contents.Replace("@Html.Partial(_menu)", menu.HTML);
+            layout.HTML = layout.Contents.Replace("@Html.Partial(_footer)", footer.HTML);
+        }
+
+        private void PrepareMenu()
+        {
+            string itens = "";
+            string item = "";
+            var menu_template = _baseFolder.FindFile("_menu");
+            var item_template = _baseFolder.FindFile("_menu_item");
+            var pages = _baseFolder.FindFolder("pages").Files;
+            foreach (var page in pages)
             {
-                // System.Console.WriteLine(folder.Name);
-                var layout = _baseFolder.FindFile("layout");
-                var header = _baseFolder.FindFile("_header");
-                var footer = _baseFolder.FindFile("_footer");
-                var page = _baseFolder.FindFile("_page");
-                header.Contents = header.Contents.Replace("@Page.Title", file.Name);
-                layout.Contents = layout.Contents.Replace("@Html.Partial(_header)", header.Contents);
-                layout.Contents = layout.Contents.Replace("@Html.Partial(_footer)", footer.Contents);
-                layout.Contents = layout.Contents.Replace("@Html.Render(Content)", file.Contents);
-                layout.SaveAs("HaikuWebsite/public/about.html");
+                item = item_template.Contents.Replace("@Page.Link", $"{page.Name.ToLower()}.html").Replace("@Page.Name", page.Name);
+                itens += item;
             }
+            menu_template.HTML = menu_template.Contents.Replace("@HTML.Partial(_menu_item)", itens);
         }
 
         private void BuildIndex()
         {
-            var index = _baseFolder.FindFile("index");
-            if (index is null)
-            {
-                // Builds blog as index
-            }
-            else
-            {
-                // Builds index file as a page
-                // and Blog as /blog
-            }
-
+            // Build index
         }
 
         private void BuildBlog()
         {
-            
+            if (IsBlogIndex())
+            {
+                // Build Blog as index
+            }
+            else
+            {
+                BuildIndex();
+                // Build Blog as /blog
+            }
         }
 
         private void BuildPost()
         {
-            
+
         }
 
         private void BuildPage()
         {
-            
+
         }
 
         private void BuildArchive()
         {
-            
+
         }
     }
 }
