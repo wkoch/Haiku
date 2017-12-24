@@ -59,9 +59,9 @@ namespace Haiku
 
         public Status Create()
         {
-            CLI.BlueText();
+            Program.CLI.BlueText();
             Console.Write("Creating ");
-            CLI.CyanText();
+            Program.CLI.CyanText();
             Console.Write($"{RelativePath}: ");
             try
             {

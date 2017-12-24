@@ -15,31 +15,31 @@ namespace Haiku
     {
         public static void Error()
         {
-            CLI.RedText();
+            Program.CLI.RedText();
             Console.WriteLine("Error!");
-            CLI.DefaultColor();
+            Program.CLI.DefaultColor();
         }
 
 
         public static void Success()
         {
-            CLI.GreenText();
+            Program.CLI.GreenText();
             Console.WriteLine("OK");
-            CLI.DefaultColor();
+            Program.CLI.DefaultColor();
         }
 
         public static void ErrorMessage(string msg)
         {
-            CLI.RedText();
+            Program.CLI.RedText();
             System.Console.WriteLine($"\n{msg}.");
-            CLI.DefaultColor();
+            Program.CLI.DefaultColor();
         }
 
         public static void SuccessMessage(string msg)
         {
-            CLI.GreenText();
+            Program.CLI.GreenText();
             System.Console.WriteLine($"\n{msg}");
-            CLI.DefaultColor();
+            Program.CLI.DefaultColor();
         }
     }
 }

@@ -6,11 +6,11 @@ namespace Haiku
 {
     public class CLI
     {
-        private static List<Command> Commands = new List<Command>();
-        private static string _argument { get; set; }
-        private static string _option { get; set; }
-        private static Command _help { get; set; }
-        private static readonly ConsoleColor _defaultConsoleColor = Console.ForegroundColor;
+        private List<Command> Commands = new List<Command>();
+        public string Argument { get; set; }
+        public string Option { get; set; }
+        private Command _help { get; set; }
+        private readonly ConsoleColor _defaultConsoleColor = Console.ForegroundColor;
 
 
         public void Run(string[] args)
@@ -20,19 +20,19 @@ namespace Haiku
                 Name = "help",
                 Description = " Prints this text, or any given command's Help.",
                 Help = "Seriously?",
-                Method = CLI.Help
+                Method = Help
             });
 
             Parse(args);
-            var command = FindCommandOrHelp(_argument);
+            var command = FindCommandOrHelp(Argument);
             command?.Execute();
         }
 
 
-        private static void Parse(string[] args)
+        private void Parse(string[] args)
         {
-            _argument = (args.Length > 0) ? args[0] : null;
-            _option = (args.Length > 1) ? args[1] : null;
+            Argument = (args.Length > 0) ? args[0] : null;
+            Option = (args.Length > 1) ? args[1] : null;
         }
 
 
@@ -43,7 +43,7 @@ namespace Haiku
         }
 
 
-        public static Command FindCommand(string arg)
+        public Command FindCommand(string arg)
         {
             var getCommand = from cmd in Commands
                              where cmd.Name == arg
@@ -52,7 +52,7 @@ namespace Haiku
         }
 
 
-        private static Command FindCommandOrHelp(string arg)
+        private Command FindCommandOrHelp(string arg)
         {
             var command = FindCommand(arg);
             if (command != null)
@@ -62,31 +62,18 @@ namespace Haiku
         }
 
 
-        public static bool OptionWasGiven()
+        public bool OptionWasGiven() => Option != null;
+
+        public bool OptionIsCommand() => FindCommand(Option) != null;
+
+
+        public void Help()
         {
-            return _option != null;
-        }
-
-
-        public static string GetOption()
-        {
-            return _option;
-        }
-
-
-        public static bool OptionIsCommand(string arg)
-        {
-            return FindCommand(arg) != null;
-        }
-
-
-        public static void Help()
-        {
-            Console.WriteLine($"{Program.AppName} v{Program.AppVersion}\n");
-            if (OptionWasGiven() && OptionIsCommand(_option))
+            Console.WriteLine($"{Program.Name} v{Program.Version}\n");
+            if (OptionWasGiven() && OptionIsCommand())
             {
-                var cmd = FindCommand(_option);
-                Console.WriteLine($"Usage: {Program.AppName.ToLower()} {cmd.Name} [argument]");
+                var cmd = FindCommand(Option);
+                Console.WriteLine($"Usage: {Program.Name.ToLower()} {cmd.Name} [argument]");
                 if (cmd.Argument != null)
                 {
                     Console.WriteLine("\nArguments:");
@@ -95,23 +82,23 @@ namespace Haiku
             }
             else
             {
-                Console.WriteLine($"Usage: {Program.AppName.ToLower()} [command] [option]\n");
+                Console.WriteLine($"Usage: {Program.Name.ToLower()} [command] [option]\n");
                 Console.WriteLine("Commands:");
                 foreach (var command in Commands)
                 {
                     Console.WriteLine($"  {command.Name}: {command.Description}");
                 }
-                Console.WriteLine($"\nUse \"{Program.AppName.ToLower()} help [command]\" for more information about a command.");
+                Console.WriteLine($"\nUse \"{Program.Name.ToLower()} help [command]\" for more information about a command.");
             }
         }
 
 
-        public static void SetColor(ConsoleColor color) => Console.ForegroundColor = color;
-        public static void DefaultColor() => SetColor(_defaultConsoleColor);
-        public static void BlueText() => SetColor(ConsoleColor.Blue);
-        public static void CyanText() => SetColor(ConsoleColor.Cyan);
-        public static void GreenText() => SetColor(ConsoleColor.Green);
-        public static void RedText() => SetColor(ConsoleColor.Red);
-        public static void GrayText() => SetColor(ConsoleColor.Gray);
+        public void SetColor(ConsoleColor color) => Console.ForegroundColor = color;
+        public void DefaultColor() => SetColor(_defaultConsoleColor);
+        public void BlueText() => SetColor(ConsoleColor.Blue);
+        public void CyanText() => SetColor(ConsoleColor.Cyan);
+        public void GreenText() => SetColor(ConsoleColor.Green);
+        public void RedText() => SetColor(ConsoleColor.Red);
+        public void GrayText() => SetColor(ConsoleColor.Gray);
     }
 }

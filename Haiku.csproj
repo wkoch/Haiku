@@ -7,6 +7,7 @@
     <EmbeddedResource Include="Resources/pages/*.md" />
     <EmbeddedResource Include="Resources/posts/*.md" />
     <EmbeddedResource Include="Resources/template/*.html" />
+    <EmbeddedResource Include="Resources/public/*.css" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Markdown" Version="2.2.1" />

@@ -47,9 +47,9 @@ namespace Haiku
 
         public Status Create()
         {
-            CLI.BlueText();
+            Program.CLI.BlueText();
             Console.Write("Creating ");
-            CLI.CyanText();
+            Program.CLI.CyanText();
             Console.Write($"{FilePath}: ");
             try
             {
@@ -80,9 +80,9 @@ namespace Haiku
 
         public Status Publish(string filepath)
         {
-            CLI.BlueText();
+            Program.CLI.BlueText();
             Console.Write("Creating ");
-            CLI.CyanText();
+            Program.CLI.CyanText();
             Console.Write($"{filepath}: ");
             try
             {
