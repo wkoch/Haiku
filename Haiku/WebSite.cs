@@ -20,6 +20,7 @@ namespace Haiku
         private List<Page> Pages = new List<Page>();
         private List<Post> Posts = new List<Post>();
         private List<Template> Templates = new List<Template>();
+        public Template Layout;
 
         private void UpdateName()
         {
@@ -62,30 +63,51 @@ namespace Haiku
             UpdateName();
             System.Console.WriteLine($"Building \"{BaseFolder.Name}\".");
             ReadFolders();
-            ReadProjectFiles();
+            ReadFiles();
             BuildProject();
         }
 
-        private void ReadProjectFiles()
+        private void ReadFiles()
         {
             foreach (var folder in Folders)
             {
-                switch (folder.Name)
+                var files = ListFiles(folder.Path);
+                foreach (var filepath in files)
                 {
-                    case "pages":
-                        var files = ListFiles(folder.Path);
-                        foreach (var file in files)
-                        {
-                            Pages.Add(new Page { Name = file, Path = Path.Combine(folder.Path, file)});
-                        }
-                        break;
-                    default:
-                        break;
+                    var file = Path.GetFileName(filepath);
+                    switch (folder.Name)
+                    {
+                        case "pages":
+                            var page = new Page { Name = file, Path = filepath };
+                            Pages.Add(page);
+                            page.Process();
+                            // System.Console.WriteLine($"File: {file}, Path: {filepath}");
+                            break;
+                        case "posts":
+                            var post = new Post { Name = file, Path = filepath };
+                            Posts.Add(post);
+                            post.Process();
+                            // System.Console.WriteLine($"File: {file}, Path: {filepath}");
+                            break;
+                        case "template":
+                            if (file == "layout.html")
+                            {
+                                Layout = new Template { Name = file, Path = filepath };
+                                Layout.Process();
+                            }
+                            else
+                            {
+                                var template = new Template { Name = file, Path = filepath };
+                                Templates.Add(template);
+                                template.Process();
+                            }
+                            // System.Console.WriteLine($"File: {file}, Path: {filepath}");
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
-            // ReadTemplates();
-            // ReadPages();
-            // ReadPosts();
         }
 
         private string[] ListFiles(string path)
@@ -105,10 +127,72 @@ namespace Haiku
 
         private void BuildProject()
         {
+            PreparePages();
+            PrepareMenu();
+            PrepareLayout();
             // BuildIndex();
-            // BuildPages();
+            BuildPages();
             // BuildPosts();
             // CopyStaticFiles();
+        }
+
+        private void PrepareLayout()
+        {
+            foreach (var template in Templates)
+            {
+                Layout.Content = Layout.Content.Replace($"@Html.Partial({Path.GetFileNameWithoutExtension(template.Name)})", template.Content);
+                Layout.Content = Layout.Content.Replace("@WebSite.Title", Name);
+            }
+        }
+
+        private void PreparePages()
+        {
+            foreach (var page in Pages)
+            {
+                page.HTML = new HTML { Path = Path.Combine(BaseFolder.Name, "public", Path.ChangeExtension(page.Name, "html")), Slug = Path.ChangeExtension(page.Name, "html") };
+            }
+        }
+
+        private void PrepareMenu()
+        {
+            var menu = FindTemplate("_menu.html");
+            var menuItem = FindTemplate("_menu_item.html");
+            string tmp = "";
+
+            foreach (var page in Pages)
+            {
+                var item = menuItem.Content.Replace("@Page.Link", page.HTML.Slug);
+                tmp += item.Replace("@Page.Name", page.Title);
+            }
+            menu.Content = menu.Content.Replace("@HTML.Partial.Each(_menu_item)", tmp);
+            Layout.Content = Layout.Content.Replace($"@Html.Partial(_menu)", menu.Content);
+        }
+
+        private void BuildPages()
+        {
+            foreach (var page in Pages)
+            {
+                // page.HTML = new HTML { Path = Path.Combine("public", Path.ChangeExtension(page.Name, "html")), Slug = Path.ChangeExtension(page.Name, "html") };
+                var template = FindTemplate("_page.html");
+                page.HTML.Export = Layout.Content.Replace("@Html.Render(Content)", template.Content);
+                page.HTML.Export = page.HTML.Export.Replace("@Page.Markdown", page.Markdown);
+                page.HTML.Export = page.HTML.Export.Replace("@Page.Title", page.Title);
+                if (page.SubTitle is null)
+                    page.HTML.Export = page.HTML.Export.Replace("@Page.SubTitle", "");
+                else
+                    page.HTML.Export = page.HTML.Export.Replace("@Page.SubTitle", page.SubTitle);
+                System.IO.File.WriteAllText(page.HTML.Path, page.HTML.Export);
+            }
+        }
+
+        private Template FindTemplate(string name)
+        {
+            foreach (var template in Templates)
+            {
+                if (template.Name == name)
+                    return template;
+            }
+            return null;
         }
     }
 }
