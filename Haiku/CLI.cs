@@ -55,10 +55,7 @@ namespace Haiku
         private Command FindCommandOrHelp(string arg)
         {
             var command = FindCommand(arg);
-            if (command != null)
-                return command;
-            else
-                return FindCommand("help");
+            return command ?? FindCommand("help");
         }
 
 

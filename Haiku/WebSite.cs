@@ -214,10 +214,7 @@ namespace Haiku
                 page.HTML.Export = Layout.Content.Replace("@Html.Render(Content)", template.Content);
                 page.HTML.Export = page.HTML.Export.Replace("@Page.Markdown", page.Markdown);
                 page.HTML.Export = page.HTML.Export.Replace("@Page.Title", page.Title);
-                if (page.SubTitle is null)
-                    page.HTML.Export = page.HTML.Export.Replace("@Page.SubTitle", "");
-                else
-                    page.HTML.Export = page.HTML.Export.Replace("@Page.SubTitle", page.SubTitle);
+                page.HTML.Export = page.HTML.Export.Replace("@Page.SubTitle", page.SubTitle);
                 File.WriteAllText(page.HTML.Path, page.HTML.Export);
             }
         }

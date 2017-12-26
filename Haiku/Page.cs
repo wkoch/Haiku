@@ -20,8 +20,6 @@ namespace Haiku
             var contents = new StringReader(Content);
             Title = contents.ReadLine();
             SubTitle = contents.ReadLine();
-            if (SubTitle == string.Empty)
-                SubTitle = null;
             Markdown = markdown.Transform(contents.ReadToEnd());
         }
     }
