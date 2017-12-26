@@ -1,13 +1,12 @@
 using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Text;
-
-using System.Text.RegularExpressions;
+using System.Resources;
 using System.Reflection;
 using System.Collections;
 using System.Globalization;
-using System.Resources;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Haiku
 {
@@ -15,7 +14,6 @@ namespace Haiku
     {
         public string Name = "Haiku Website";
         public Folder BaseFolder;
-
         private List<Folder> Folders = new List<Folder>();
         private List<Page> Pages = new List<Page>();
         private List<Post> Posts = new List<Post>();
@@ -53,7 +51,7 @@ namespace Haiku
 
                     System.IO.Directory.CreateDirectory(Path.Combine(BaseFolder.Name, folder));
                     var reader = new StreamReader(stream);
-                    System.IO.File.WriteAllText(Path.Combine(BaseFolder.Name, folder, file), reader.ReadToEnd());
+                    File.WriteAllText(Path.Combine(BaseFolder.Name, folder, file), reader.ReadToEnd());
                 }
             }
         }
@@ -62,9 +60,48 @@ namespace Haiku
         {
             UpdateName();
             System.Console.WriteLine($"Building \"{BaseFolder.Name}\".");
+            MakePublicFolder();
+            CopyCSS();
             ReadFolders();
             ReadFiles();
             BuildProject();
+        }
+
+        private void MakePublicFolder()
+        {
+            var path = Path.Combine(BaseFolder.Name, "public");
+            CleanPublicFolder(path);
+            Directory.CreateDirectory(path);
+        }
+
+        private void CleanPublicFolder(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                var dirs = Directory.GetDirectories(path);
+                var files = Directory.GetFiles(path);
+                if (dirs.Length is 0 && files.Length is 0)
+                    Directory.Delete(path);
+                else
+                {
+                    foreach (var file in files)
+                    {
+                        File.Delete(file);
+                    }
+                }
+            }
+        }
+
+        private void CopyCSS()
+        {
+            var origin = Path.Combine(BaseFolder.Name, "template");
+            var destination = Path.Combine(BaseFolder.Name, "public");
+            var cssFiles = Directory.GetFiles(origin, "*.css", SearchOption.TopDirectoryOnly);
+            foreach (var file in cssFiles)
+            {
+                var path = Path.Combine(destination,Path.GetFileName(file));
+                File.Copy(file, path);
+            }
         }
 
         private void ReadFiles()
@@ -181,7 +218,7 @@ namespace Haiku
                     page.HTML.Export = page.HTML.Export.Replace("@Page.SubTitle", "");
                 else
                     page.HTML.Export = page.HTML.Export.Replace("@Page.SubTitle", page.SubTitle);
-                System.IO.File.WriteAllText(page.HTML.Path, page.HTML.Export);
+                File.WriteAllText(page.HTML.Path, page.HTML.Export);
             }
         }
 
