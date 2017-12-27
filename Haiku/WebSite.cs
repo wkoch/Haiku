@@ -59,12 +59,32 @@ namespace Haiku
         public void Build()
         {
             UpdateName();
-            System.Console.WriteLine($"Building \"{BaseFolder.Name}\".");
-            MakePublicFolder();
-            CopyCSS();
-            ReadFolders();
-            ReadFiles();
-            BuildProject();
+            if (IsHaikuWebsite())
+            {
+                System.Console.WriteLine($"Building \"{BaseFolder.Name}\".");
+                MakePublicFolder();
+                CopyCSS();
+                ReadFolders();
+                ReadFiles();
+                BuildProject();
+            }
+            else
+            {
+                Console.WriteLine("Aborted: Invalid project.");
+            }
+        }
+
+        private bool IsHaikuWebsite()
+        {
+            var result = false;
+            string[] folders = { "pages", "posts", "template" };
+            foreach (var folder in folders)
+            {
+                if (Directory.Exists(BaseFolder.Name))
+                    if (Directory.Exists(Path.Combine(BaseFolder.Name, folder)))
+                        result = true;
+            }
+            return result;
         }
 
         private void MakePublicFolder()
@@ -198,8 +218,11 @@ namespace Haiku
 
             foreach (var page in Pages)
             {
-                var item = menuItem.Content.Replace("@Page.Link", page.HTML.Slug);
-                tmp += item.Replace("@Page.Name", page.Title);
+                if (page.Name != "index.md")
+                {
+                    var item = menuItem.Content.Replace("@Page.Link", page.HTML.Slug);
+                    tmp += item.Replace("@Page.Name", page.Title);
+                }
             }
             menu.Content = menu.Content.Replace("@HTML.Partial.Each(_menu_item)", tmp);
             Layout.Content = Layout.Content.Replace($"@Html.Partial(_menu)", menu.Content);
@@ -209,7 +232,6 @@ namespace Haiku
         {
             foreach (var page in Pages)
             {
-                // page.HTML = new HTML { Path = Path.Combine("public", Path.ChangeExtension(page.Name, "html")), Slug = Path.ChangeExtension(page.Name, "html") };
                 var template = FindTemplate("_page.html");
                 page.HTML.Export = Layout.Content.Replace("@Html.Render(Content)", template.Content);
                 page.HTML.Export = page.HTML.Export.Replace("@Page.Markdown", page.Markdown);
